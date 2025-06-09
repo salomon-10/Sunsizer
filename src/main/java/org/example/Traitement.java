@@ -1,5 +1,7 @@
 package org.example;
 
+import javax.swing.*;
+
 public class Traitement {
     public Object TypeConso;
     Double Ec, Ir, Uc, Up, Pref, Long, Larg, Lat;
@@ -7,17 +9,16 @@ public class Traitement {
     // Var interne
     double Ep, Pc, Np , TensionMod;
     String TypePn;
+    String Conso;
     String Rd;
     private int Nps;
     private int Npp;
     private double Surf;
 
-    public Traitement(Double Ec, Double Ir, Double Uc, Double Up, Double Pref, Double Long, Double Larg, Double Lat) {
+    public Traitement(Double Ec, Double Ir, Double Uc,  Double Long, Double Larg, Double Lat) {
         this.Ec = Ec;
         this.Ir = Ir;
         this.Uc = Uc;
-        this.Up = Up;
-        this.Pref = Pref;
         this.Long = Long;
         this.Larg = Larg;
         this.Lat = Lat;
@@ -45,19 +46,6 @@ public class Traitement {
         Uc = uc;
     }
 
-    public Double getUp() {
-        return Up;
-    }
-    public void setUp(Double up) {
-        Up = up;
-    }
-
-    public Double getPref() {
-        return Pref;
-    }
-    public void setPref(Double pref) {
-        Pref = pref;
-    }
 
     public Double getLong() {
         return Long;
@@ -91,21 +79,56 @@ public class Traitement {
     }
 
     public void ChoixPanneau() {
+        String recommandation;
         if (Pc > 1000.0) {
-            TypePn = "Cellules monocristallines";Rd = "12-19%";TensionMod = 48;
+            recommandation = "Cellules monocristallines";
         } else if (Pc < 150) {
-            TypePn = "Module PV Amorphe";Rd = "6-10%";TensionMod = 12;
+            recommandation = "Module PV Amorphe";
         } else {
-            TypePn = "Cellules Polycristallines";Rd = "11-13%";TensionMod = 24;
+            recommandation = "Cellules Polycristallines";
+        }
+        //chiox
+        String[] options = {
+                "Cellules monocristallines",
+                "Cellules Polycristallines",
+                "Module PV Amorphe"
+        };
+        String choix = (String) JOptionPane.showInputDialog(
+                null,
+                "Recommandation : " + recommandation + "\n\nChoisissez le type de panneau :",
+                "Sélection du type de panneau",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                recommandation //val pr defaut
+        );
+
+        if (choix != null) {
+            if (choix.equals("Cellules monocristallines")) {
+                TypePn = "Cellules monocristallines";
+                Rd = "12-19%"; TensionMod = 48; Pref = 470.0; Up = 37.0;
+            } else if (choix.equals("Cellules Polycristallines")) {
+                TypePn = "Cellules Polycristallines";
+                Rd = "11-13%"; TensionMod = 24; Pref = 200.0; Up = 25.0;
+            } else if (choix.equals("Module PV Amorphe")) {
+                TypePn = "Module PV Amorphe";
+                Rd = "6-10%"; TensionMod = 12; Pref = 325.0; Up = 32.0;
+            }
+            // maj de bdd
+            Database.setPref(Pref);
+            Database.setTypePn(TypePn);
+            Database.setTensionMod(TensionMod);
+            Database.setUp(Up);
         }
     }
+
     public void NbrPan() {
         Np = Pc / Pref;
     }
 
     public void Agencement() {
         Nps = (int) (Uc / Up);
-        Npp = (int) (Np / Nps);
+        Npp = (int) (Pref*Np /Pc*Nps);
 
     }
     public void Surface() {
@@ -113,7 +136,7 @@ public class Traitement {
 
     }
 
-// getters pr les value calculer
+// getters pr les valeu calculer
 
     public double getSurf() {
         return (int) Surf+1;

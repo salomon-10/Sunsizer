@@ -4,18 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static org.example.Database.*;
-
 
 public class Interface2 extends JFrame{
     private Traitement traitement;
-    double Ec, Ir, Pref,Ep,Pc,Np;
+    double Ec, Ir,Ep,Pc,Np;
     String TypePn,Rd,TensionMod, TypeConso;
     JFrame jf= new JFrame("Sunsizer");
 
     //composant
     JTextField txtTchamps= new JTextField(15);
-    JTextField txtTpann = new JTextField(15);
     JTextField txtLong = new JTextField(15);
     JTextField txtLarg = new JTextField(15);
     JTextField txtLat = new JTextField(15);
@@ -26,10 +23,9 @@ public class Interface2 extends JFrame{
     JButton jb2=new JButton("Actualiser");
     JButton jb1=new JButton("Confirmer");
 
-    public Interface2(double Ec, double Ir, double Pref, double pc, double ep, String typePn,String TypeConso, String rd, double tensionMod, double np){
+    public Interface2(double Ec, double Ir, double pc, double ep, String typePn,String TypeConso, String rd, double tensionMod, double np){
         this.Ec = Ec;
         this.Ir = Ir;
-        this.Pref = Pref;
         this.Ep=Ep;
         this.Pc=Pc;
         this.TypePn=TypePn;
@@ -55,8 +51,6 @@ public class Interface2 extends JFrame{
         jp1.add(new JLabel("Agencement Des Panneaux"+"\n"));
         jp1.add(new JLabel("Tension du Champs :"));
         jp1.add(txtTchamps);
-        jp1.add(new JLabel("Tension du Panneau:"));
-        jp1.add(txtTpann);
         jp1.add(new JLabel("Dimensions du Panneaux"+"\n"));
         jp1.add(new JLabel("Longeur :"));
         jp1.add(txtLong);
@@ -101,9 +95,7 @@ public class Interface2 extends JFrame{
 
     public void Actions() {
         jb2.addActionListener((ActionEvent e) -> {
-
             txtTchamps.setText("");
-            txtTpann.setText("");
             txtLong.setText("");
             txtLarg.setText("");
             txtLat.setText("");
@@ -113,13 +105,12 @@ public class Interface2 extends JFrame{
         jb1.addActionListener((ActionEvent e) -> {
             try {
                 double Uc = Double.parseDouble(txtTchamps.getText());
-                double Up = Double.parseDouble(txtTpann.getText());
                 double Long = Double.parseDouble(txtLong.getText());
                 double Larg= Double.parseDouble(txtLarg.getText());
                 double Lat = Double.parseDouble(txtLat.getText());
 
                 // instanciation
-                traitement = new Traitement(Ec, Ir, Uc, Up, Pref, Long, Larg, Lat);
+                traitement = new Traitement(Ec, Ir, Uc,  Long, Larg, Lat);
                 traitement.EnrgiePr();
                 traitement.Puissance();
                 traitement.ChoixPanneau();
@@ -132,7 +123,6 @@ public class Interface2 extends JFrame{
 
 // envoie desDonnées dans la bdd :
                 Database.setEp(Ep);
-                Database.setPref(Pref);
                 Database.setIr(Ir);
                 Database.setEc(Ec);
                 Database.setNp(traitement.getNp());
@@ -142,7 +132,7 @@ public class Interface2 extends JFrame{
                 Database.setPc(traitement.getPc());
                 Database.setEp(traitement.getEp());
                 Database.setTypePn(traitement.getTypePn());
-                Database.setTypeConso(TypeConso);
+                Database.setConso(TypeConso);
                 Database.setRd(traitement.getRd());
                 Database.setTensionMod(traitement.getTensionMod());
                 new Interface3();
@@ -153,6 +143,7 @@ public class Interface2 extends JFrame{
         });
 
     }
+
 
 
 }

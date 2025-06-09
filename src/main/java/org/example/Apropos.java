@@ -6,10 +6,10 @@ import java.awt.event.ActionEvent;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
-public class Aide {
-    JFrame jf= new JFrame("Sunsizer");
+public class Apropos {
+    JFrame jf= new JFrame("Assistance Sunsizer");
     JButton jb1 = new JButton("Retour");
-    public Aide(){
+    public Apropos(){
         jf.setDefaultCloseOperation(EXIT_ON_CLOSE);
         jf.setSize(1920, 787);
         jf.setLocationRelativeTo(null);
@@ -30,22 +30,33 @@ public class Aide {
 
         SunSizer est une application intelligente conçue pour aider à dimensionner un système photovoltaïque (solaire) en fonction de la consommation énergétique quotidienne d’un utilisateur.
         Elle permet, de manière simple et rapide, de :
-        ✅ Estimer le nombre de panneaux solaires nécessaires pour répondre à vos besoins énergétiques ;
-        ✅ Recommander le type de panneau adapté à votre situation ;
-        ✅ Fournir des données précises sur la production attendue selon la localisation et les caractéristiques techniques saisies.
+        ✅ D’estimer le nombre de panneaux solaires nécessaires pour couvrir vos besoins en énergie
+        ✅ De recommander automatiquement le type de panneau le plus adapté (Monocristallin, Polycristallin ou Amorphe)
+        ✅ De fournir des données techniques détaillées en fonction de la localisation, de l’irradiation et des caractéristiques du chantier
+        ✅ D’exporter un rapport PDF professionnel du projet contenant tous les résultats
 
-        🟩 Étape 1 : Saisie des données :
+        
+        🟩 Étape 1 : Collecte de données
+        
+        🔹Entrez le nom de l'Equiement
+        🔹Entrez sa puissance
+        🔹Entrez la durée d'utilisation par jour
+        🔹 saisissez la Quantité 
+        🔹 appuyez sur "Enregistrer" pour l'affichage dans le tableau
+        🔹 appuyez sur "Suivant" pour passer a la page de Saisie des données
+          
+        🟩 Étape 2 : Saisie des données :
 
         🔹 Entrez la valeur journalière estimée de votre consommation
         🔹 Entrez l'irradiation du milieu
         🔹 Entrez la puissance de référence d’un panneau
         🔹 Cliquez sur le bouton « Calculer »
-        🔹 Un type de panneau vous est automatiquement recommandé en fonction de votre consommation
+        🔹 Le système recommande automatiquement un type de panneau photovoltaïque adapté à votre consommation
         🔹 Choisissez votre type de consommation : Résidentiel, Commercial, Industriel, Agricole ou Autre (en cas de doute)
         🔹 Cliquez sur « Afficher les données » pour voir les résultats dans la zone d’affichage
         🔹 Utilisez les boutons « Retour », « Continuer » ou « Actualiser » selon vos besoins
 
-        🟩 Étape 2 : Dernières saisies de données :
+        🟩 Étape 3 : Dernières saisies de données :
 
         🔹 Entrez la tension du chantier étudié
         🔹 Entrez la tension unitaire d’un panneau
@@ -56,7 +67,7 @@ public class Aide {
         🔹 Entrez la latitude de votre emplacement
         🔹 Vérifiez vos saisies et confirmez, ou cliquez sur « Actualiser » pour recommencer
 
-        🟩 Étape finale : Exportation PDF :
+        🟩 Étape 4 Exportation PDF :
         
         🔹 Saisissez le nom de votre projet
         🔹 Cliquez sur « Exporter en PDF »
@@ -66,7 +77,6 @@ public class Aide {
         📩 Email : sikasalomon4@gmail.com
         📞 Téléphone : +228 71372014/91616251
         📸 Instagram : Salomon__10
-
         ----------------------
         Développé par SIKA K. Salomon
         © 2025 SunSizer — propulsé par Waddle Corporation. Tous droits réservés.
@@ -77,6 +87,7 @@ public class Aide {
         box1.setEditable(false);
         box1.setBackground(Color.white);
         JButton jb1 = new JButton("Retour à l'accueil");
+        jb1.setBackground(new Color(255, 120, 120));
         JPanel Bas2Page = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         Bas2Page.add(jb1);
         Bas2Page.setBackground(Color.white);
@@ -94,6 +105,6 @@ public class Aide {
 }
 
     public static void main(String[] args) {
-        new Aide();
+        new Apropos();
     }
 }

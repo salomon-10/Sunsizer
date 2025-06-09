@@ -3,29 +3,30 @@ package org.example;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 
 public class Interface1 extends JFrame {
     private JTextArea logArea = new JTextArea(8, 40);
     private Traitement traitement;
     JFrame jf= new JFrame("Sunsizer");
+    String conso;
 
     //composant
     JTextField txtConso= new JTextField(15);
     JTextField txtIrr= new JTextField(15);
-    JTextField txtPref = new JTextField(15);
     JTextField txtEtat= new JTextField(15);
 
     JComboBox<String>TypePanneaux=new JComboBox<>(new String[]{"Aucun","Cellules monocristallines","Module PV Amorphe","Cellules Polycristallines"});
-    JComboBox<String>TypeConso=new JComboBox<>(new String[]{" Résidentiel","Tertiaire (ou commercial)","Industriel","Agricole","Autres"});
+    JComboBox<String> TypeConso = new JComboBox<>(new String[]{" ",
+            "Résidentiel", "Tertiaire (ou commercial)", "Industriel", "Agricole", "Autres"
+    });
 
     JButton jb1=new JButton("Calculer");
     JButton jb2=new JButton("Afficher les Données");
     JButton jb3=new JButton("Continuer");
     JButton jb4=new JButton("Actualiser");
     JButton jb5=new JButton("Retour");
-
-
 
 
     public Interface1(){
@@ -37,17 +38,21 @@ public class Interface1 extends JFrame {
         intcomposant();
         jf.setVisible(true);
     }
-    public void intcomposant(){
 
+    public void intcomposant(){
+        double  Ed =Database.getEc();
         // layout 1
         JPanel jp1 = new JPanel(new GridLayout(0, 1, 5, 5));
         jp1.setBorder(BorderFactory.createTitledBorder("Entrées"));
         jp1.add(new JLabel("Consomation Journaliere :"));
+        if(Ed>00.0){
+            txtConso.setText(String.valueOf(Ed));
+        }else{
+            txtConso.setText(" ");
+        }
         jp1.add(txtConso);
         jp1.add(new JLabel("Irradiation du milieu:"));
         jp1.add(txtIrr);
-        jp1.add(new JLabel("Puissance Crete referentiel:"));
-        jp1.add(txtPref);
         jp1.add(jb1);
         jb1.setBackground(Color.lightGray);
         jb1.setForeground(Color.blue);
@@ -75,14 +80,10 @@ public class Interface1 extends JFrame {
         centerPanel.add(jp1);
         centerPanel.add(jp2);
         JP.add(centerPanel, BorderLayout.CENTER);
-        JP.add(scrollLogs, BorderLayout.SOUTH);
+
 
         JPanel jp3 = new JPanel(new BorderLayout());
         jp3.add(scrollLogs, BorderLayout.CENTER);
-
-
-                    add(jb5);
-
         JPanel Bas2Page = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         Bas2Page.add(jb5);
         Bas2Page.add(jb4);
@@ -106,21 +107,15 @@ public class Interface1 extends JFrame {
             try {
                 double Ec = Double.parseDouble(txtConso.getText());
                 double Ir = Double.parseDouble(txtIrr.getText());
-                double Pref = Double.parseDouble(txtPref.getText());
-
-                // instanciation
-                traitement = new Traitement(Ec, Ir, 0.0, 0.0, Pref, 0.0, 0.0, 0.0); //valeur pr defaut
-                traitement.EnrgiePr();
-                traitement.Puissance();
-                traitement.ChoixPanneau();
-                traitement.NbrPan();
-
-                Database.setTypeConso((String) TypeConso.getSelectedItem());
-
+                    // instanciation
+                    traitement = new Traitement(Ec, Ir, 0.0, 0.0, 0.0, 0.0); //valeur pr defaut
+                    traitement.EnrgiePr();
+                    traitement.Puissance();
+                    traitement.ChoixPanneau();
+                    traitement.NbrPan();
                 txtEtat.setText("✅✅ Vérification terminé !");
                 TypePanneaux.setSelectedItem(traitement.TypePn);
-                TypeConso.setSelectedItem(traitement.TypeConso);
-
+                Database.setEc(Ec);
 
             } catch (NumberFormatException ex) {
                 txtEtat.setText("❌❌Erreur 404 !");
@@ -129,33 +124,34 @@ public class Interface1 extends JFrame {
         });
 
         jb2.addActionListener((ActionEvent e) -> {
-            if (traitement == null) {
-                logArea.append("⚠ Aucun calcul effectué. Clique d'abord sur \"Calculer\".\n\n");
-                return;
-            }
+            choixConso();
+            if (TypeConso.getSelectedItem() == " ") {
+                JOptionPane.showMessageDialog(null, "❌ Aucun type sélectionné !");
+            }else {
             logArea.append(">> Résultats du calcul :\n");
             logArea.append("🔹Puissance Crête (Pc):    " + traitement.Pc + " Wc\n");
             logArea.append("🔹Énergie à produire (Ep):    " + traitement.Ep + " Wh\n");
             logArea.append("🔹Type panneau:   " + traitement.TypePn + "\n");
-            logArea.append("🔹Type Consomation :   " + Database.TypeConso + "\n");
+            logArea.append("🔹Type Consomation :   "+conso+ "\n");
             logArea.append("🔹Rendement:   " + traitement.Rd + "\n");
             logArea.append("🔹Tension du module:   " + traitement.TensionMod + "\n");
             logArea.append("🔹Nombre de panneaux:   " + traitement.Np + "\n\n");
+            }
+
         });
 
         jb3.addActionListener((ActionEvent e) -> {
             try {
-                double Ec = Double.parseDouble(txtConso.getText());
+                double Ec = Database.getEc();
                 double Ir = Double.parseDouble(txtIrr.getText());
-                double Pref = Double.parseDouble(txtPref.getText());
                 double Ep=traitement.Ep;
                 double Pc=traitement.Pc;
                 String TypePn=traitement.TypePn;
-                String TypeConso=Database.getTypeConso();
+                String TypeConso=Database.getConso();
                 String Rd=traitement.Rd;
                 double TensionMod=traitement.TensionMod;
                 double Np=traitement.Np;
-                new Interface2(Ec, Ir, Pref,Pc,Ep,TypePn,TypeConso,Rd,TensionMod,Np); // sauvegarde les données
+                new Interface2(Ec, Ir,Pc,Ep,TypePn,TypeConso,Rd,TensionMod,Np); // sauvegarde le données
                 jf.dispose();
             } catch (NumberFormatException ex) {
                 txtEtat.setText("❌ Erreur : Vérifie les valeurs !");
@@ -165,7 +161,6 @@ public class Interface1 extends JFrame {
         jb4.addActionListener((ActionEvent e) ->{
             txtConso.setText("");
             txtIrr.setText("");
-            txtPref.setText("");
             txtEtat.setText("");
             logArea.setText("");
         });
@@ -174,11 +169,37 @@ public class Interface1 extends JFrame {
             new welcome();
             jf.dispose();
         });
+        TypeConso.addActionListener(e -> choixConso());//transfers d type conso a choixconso
+    }
+    public void choixConso() {
+        conso = (String) TypeConso.getSelectedItem();
+        Database.setConso(conso);
+        if (conso != null) {
+            switch (conso.trim()) {
+                case "Résidentiel":
+                  conso = (" Résidentiel");
+                    break;
+                case "Tertiaire (ou commercial)":
+                    conso = (" commercial");
+                    break;
+                case "Industriel":
+                    conso = (" Industriel");
+                    break;
+                case "Agricole":
+                    conso = (" Agricole");
+                    break;
+                case "Autres":
+                    conso = (" Autres");
+                    break;
+                default:
+                    conso = ("  ");
+                    break;
+            }
+        }
     }
 
-
-    public static void main(String[] args) {
-        new Interface1();
-
+    public static void main(String[] args)  throws UnsupportedLookAndFeelException {
+        UIManager.setLookAndFeel(new NimbusLookAndFeel());
+        SwingUtilities.invokeLater(Interface1::new);
 
 }}

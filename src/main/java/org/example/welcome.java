@@ -10,7 +10,7 @@ public class welcome {
     JPanel JP = new JPanel(new BorderLayout());
     JButton jb1 = new JButton("Historique");
     JButton jb2 = new JButton("Nouveau Projet");
-    JButton jb3 = new JButton("Aide");
+    JButton jb3 = new JButton("Apropos");
     JLabel jlim;
     public welcome() {
         jf.setSize(800, 500);
@@ -31,7 +31,7 @@ public class welcome {
             jlim = new JLabel("Logo manquant", JLabel.CENTER);
             jlim.setFont(new Font("SansSerif", Font.BOLD, 18));
         }
-            jb3.setBackground(Color.lightGray);
+            jb3.setBackground(new Color(21, 229, 255, 163));
         jb1.setBackground(new Color(255, 120, 120));
         jb2.setBackground(new Color(161, 253, 208));
         // Panel central
@@ -64,14 +64,14 @@ public class welcome {
 
     public void Action() {
         jb2.addActionListener((ActionEvent e) -> {
-            new Interface1();
+            new collect();
             jf.dispose();
         });
         jb1.addActionListener((ActionEvent e) -> {
             new Historique();
         });
         jb3.addActionListener((ActionEvent e) -> {
-           new Aide();
+           new Apropos();
             jf.dispose();
         });
     }

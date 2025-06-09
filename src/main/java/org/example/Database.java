@@ -5,12 +5,13 @@ public class Database {
     private static double Ec;
     private static double Ir;
     private static double Pref;
+    private static double Up;
 
     //  Traitement
     static double Ep;
     private static double Pc;
     private static String TypePn;
-    static String TypeConso;
+    static String conso;
     private static String Rd;
     private static double TensionMod;
     private static int Np;
@@ -46,8 +47,8 @@ public class Database {
     public static void setTypePn(String type) {
         TypePn = type;
     }
-    public static void setTypeConso(String typeC) {
-        TypeConso = typeC;
+    public static void setConso(String typeC) {
+        conso = typeC;
     }
 
     public static void setRd(String rd) {
@@ -104,8 +105,8 @@ public class Database {
         return TypePn;
     }
 
-    public static String getTypeConso() {
-        return TypeConso;
+    public static String getConso() {
+        return conso;
     }
 
     public static String getRd() {
@@ -133,4 +134,10 @@ public class Database {
     }
 
 
+    public static void setUp(Double up) {
+        Database.Up = up;
+    }
+    public static Double getUp() {
+        return Up;
+    }
 }

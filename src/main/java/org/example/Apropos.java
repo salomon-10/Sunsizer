@@ -36,7 +36,7 @@ public class Apropos {
         ✅ D’exporter un rapport PDF professionnel du projet contenant tous les résultats
 
         
-        🟩 Étape 1 : Collecte de données
+        🟩 Étape 1 : Collecte de données(facultative si vous avez deja la consomation journaliere)
         
         🔹Entrez le nom de l'Equiement
         🔹Entrez sa puissance
@@ -55,6 +55,7 @@ public class Apropos {
         🔹 Choisissez votre type de consommation : Résidentiel, Commercial, Industriel, Agricole ou Autre (en cas de doute)
         🔹 Cliquez sur « Afficher les données » pour voir les résultats dans la zone d’affichage
         🔹 Utilisez les boutons « Retour », « Continuer » ou « Actualiser » selon vos besoins
+        
 
         🟩 Étape 3 : Dernières saisies de données :
 
@@ -66,6 +67,7 @@ public class Apropos {
         🔹 Choisissez l’orientation du toit ou du chantier
         🔹 Entrez la latitude de votre emplacement
         🔹 Vérifiez vos saisies et confirmez, ou cliquez sur « Actualiser » pour recommencer
+        🔹 Vérifiez et confirmer le type de panneaux choisis
 
         🟩 Étape 4 Exportation PDF :
         

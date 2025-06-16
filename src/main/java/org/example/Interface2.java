@@ -5,10 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 
+
 public class Interface2 extends JFrame{
+
     private Traitement traitement;
-    double Ec, Ir,Ep,Pc,Np;
-    String TypePn,Rd,TensionMod, TypeConso;
+    private double Ec, Ir,k, Ep, Pc, Np, Pref;
+    private String TypePn, Rd, TensionMod, TypeConso;
     JFrame jf= new JFrame("Sunsizer");
 
     //composant
@@ -21,18 +23,20 @@ public class Interface2 extends JFrame{
     JComboBox<String>Orientation=new JComboBox<>(new String[]{"Nord (N)", "Est (E)", "Sud (S)", "Ouest (O ou W)", "Nord-Est (NE)", "Sud-Est (SE)", "Sud-Ouest (SO)", "Nord-Ouest (NO)","Autres"});
 
     JButton jb2=new JButton("Actualiser");
-    JButton jb1=new JButton("Confirmer");
+    JButton jb1= new JButton("Confirmer");
 
-    public Interface2(double Ec, double Ir, double pc, double ep, String typePn,String TypeConso, String rd, double tensionMod, double np){
+    public Interface2(double Ec, double k, double Ir, double Pc, double Pref, double Ep,String TypePn, String TypeConso, String Rd, double TensionMod, double Np){
         this.Ec = Ec;
         this.Ir = Ir;
-        this.Ep=Ep;
-        this.Pc=Pc;
-        this.TypePn=TypePn;
-        this.TypeConso=TypeConso;
-        this.Rd=Rd;
-        this.TensionMod=TensionMod;
-        this.Np=Np;
+        this.k = k;
+        this.Ep = Ep;
+        this.Pc = Pc;
+        this.Pref = Pref;
+        this.TypePn = TypePn;
+        this.TypeConso = TypeConso;
+        this.Rd = Rd;
+        this.TensionMod = String.valueOf(TensionMod);
+        this.Np = Np;
 
         jf.setSize(800, 500);
         jf.setLocationRelativeTo(null);
@@ -45,29 +49,31 @@ public class Interface2 extends JFrame{
 
     public void intcomposant(){
 
-        // layout 1
         JPanel jp1 = new JPanel(new GridLayout(0, 1, 5, 5));
-        jp1.setBorder(BorderFactory.createTitledBorder("Entrées"));
-        jp1.add(new JLabel("Agencement Des Panneaux"+"\n"));
-        jp1.add(new JLabel("Tension du Champs :"));
+        jp1.setBorder(BorderFactory.createTitledBorder("Paramètres du champ photovoltaïque"));
+
+        jp1.add(new JLabel("🔌 Tension système (Uc en Volts) :"));
         jp1.add(txtTchamps);
-        jp1.add(new JLabel("Dimensions du Panneaux"+"\n"));
-        jp1.add(new JLabel("Longeur :"));
+        txtTchamps.setToolTipText("Ex: 48");
+
+        jp1.add(new JLabel("📏 Longueur du panneau (m) :"));
         jp1.add(txtLong);
-        jp1.add(new JLabel("Largeur :"));
+        txtLong.setToolTipText("Ex: 1.7");
+
+        jp1.add(new JLabel("📏 Largeur du panneau (m) :"));
         jp1.add(txtLarg);
-        //layou2
+        txtLarg.setToolTipText("Ex: 1.0");
+
+        // Localisation
         JPanel jp2 = new JPanel(new GridLayout(0, 1, 5, 5));
         jp2.setBorder(BorderFactory.createTitledBorder("Localisation"));
-        jp2.add(new JLabel("Hemisphere :"));
+        jp2.add(new JLabel("Hémisphère :"));
         jp2.add(Hemisphere);
         jp2.add(new JLabel("Orientation :"));
         jp2.add(Orientation);
-        jp2.add(new JLabel("Latitude:"));
+        jp2.add(new JLabel(" Latitude du site (°) :"));
         jp2.add(txtLat);
-
-
-
+        txtLat.setToolTipText("Ex: 14.7");
 
 // Layout principal
         JPanel JP = new JPanel(new BorderLayout(10, 10));
@@ -104,43 +110,55 @@ public class Interface2 extends JFrame{
 
         jb1.addActionListener((ActionEvent e) -> {
             try {
-                double Uc = Double.parseDouble(txtTchamps.getText());
-                double Long = Double.parseDouble(txtLong.getText());
-                double Larg= Double.parseDouble(txtLarg.getText());
-                double Lat = Double.parseDouble(txtLat.getText());
+                // Vérifie les champs vides
+                if (txtTchamps.getText().isEmpty() || txtLong.getText().isEmpty() ||
+                        txtLarg.getText().isEmpty() || txtLat.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(jf, "❌ Veuillez remplir tous les champs.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-                // instanciation
-                traitement = new Traitement(Ec, Ir, Uc,  Long, Larg, Lat);
+                // Conversion des champs
+                double Uc = Double.parseDouble(txtTchamps.getText().trim());
+                double longueur = Double.parseDouble(txtLong.getText().trim());
+                double largeur = Double.parseDouble(txtLarg.getText().trim());
+                double latitude = Double.parseDouble(txtLat.getText().trim());
+
+                // Validations
+                if (Uc <= 0 || longueur <= 0 || largeur <= 0) {
+                    JOptionPane.showMessageDialog(jf, "❌ Longueur, largeur et tension doivent être > 0", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (latitude < -90 || latitude > 90) {
+                    JOptionPane.showMessageDialog(jf, "❌ Latitude invalide. Elle doit être entre -90° et 90°.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Traitement principal
+                traitement = new Traitement(Ec, Ir, k, Pref, Uc, longueur, largeur, latitude);
+
                 traitement.EnrgiePr();
                 traitement.Puissance();
-                traitement.ChoixPanneau();
                 traitement.NbrPan();
+                traitement.ChoixPanneau();
+                traitement.choixSysteme();
                 traitement.Agencement();
                 traitement.Surface();
 
-
-
-
-// envoie desDonnées dans la bdd :
-                Database.setEp(Ep);
-                Database.setIr(Ir);
-                Database.setEc(Ec);
+                // Enregistrement des résultats
                 Database.setNp(traitement.getNp());
                 Database.setNps(traitement.getNps());
                 Database.setNpp(traitement.getNpp());
                 Database.setSurface(traitement.getSurf());
-                Database.setPc(traitement.getPc());
-                Database.setEp(traitement.getEp());
-                Database.setTypePn(traitement.getTypePn());
-                Database.setConso(TypeConso);
-                Database.setRd(traitement.getRd());
-                Database.setTensionMod(traitement.getTensionMod());
+
                 new Interface3();
                 jf.dispose();
+
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(jf, "❌ Erreur : Vérifiez les champs saisis !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(jf, "❌ Veuillez entrer uniquement des valeurs numériques valides.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
+
 
     }
 

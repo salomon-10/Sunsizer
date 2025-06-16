@@ -5,7 +5,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class collect extends JFrame {
-    private Traitement traitement;
     private double totalPwt = 0;
     private JLabel jl = new JLabel("Consommation Journalière : 0 W");
     JFrame jf = new JFrame("Sunsizer");

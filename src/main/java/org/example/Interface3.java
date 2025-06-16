@@ -72,7 +72,7 @@ public class Interface3 extends JFrame {
         box.add(lblEp);
 
         box.add(new JLabel("Puissance crête (Pc) :"));
-        JLabel lblPc = new JLabel(Database.getPc() + " Wc");
+        JLabel lblPc = new JLabel(String.format(Database.getPc() + " Wc") );
         box.add(lblPc);
 
         box.add(new JLabel("Type de panneaux recommandé :"));
@@ -82,6 +82,10 @@ public class Interface3 extends JFrame {
         box.add(new JLabel("Type de Consomation:"));
         JLabel lblTypeConso = new JLabel(Database.getConso());
         box.add(lblTypeConso);
+
+        box.add(new JLabel("Systeme de Consomation:"));
+        JLabel lblTypeSyst = new JLabel(Database.getSysteme());
+        box.add(lblTypeSyst);
 
         box.add(new JLabel("Rendement :"));
         JLabel lblRd = new JLabel(Database.getRd() + "");
@@ -95,6 +99,14 @@ public class Interface3 extends JFrame {
         JLabel lblNp = new JLabel(Database.getNp() + "");
         box.add(lblNp);
 
+
+        if (  Database.getNbBatteries() > 0) {
+            box.add(new JLabel("Nombre de batteries :"));
+            JLabel lblnbBatt = new JLabel(Database.getNbBatteries() + "");
+            box.add(lblnbBatt);
+            lblnbBatt.setToolTipText("<html>2 jours d'autonomie<br>Batterie 12V / 100Ah / 60% décharge</html>");
+        }
+
         box.add(new JLabel("Agencement :"));
         JLabel lblAgencement = new JLabel("Nps = " + Database.getNps() + " |   Npp = " + Database.getNpp());
         box.add(lblAgencement);
@@ -105,17 +117,6 @@ public class Interface3 extends JFrame {
 
         jp1.add(box);
         box.setBackground(new Color(250, 249, 247));
-        // Signature
-        JPanel Baspage = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        Baspage.add(new JLabel("date : .............................................."));
-        jp1.add(Box.createVerticalStrut(15));
-        jp1.add(Baspage);
-        JPanel Baspage2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        Baspage2.add(new JLabel("Signature : .............................................."));
-        jp1.add(Box.createVerticalStrut(15));
-        jp1.add(Baspage2);
-        Baspage2.setBackground(new Color(250, 249, 247));
-        Baspage.setBackground(new Color(250, 249, 247));
         JP.add(jp1, BorderLayout.CENTER);
         jp1.setBackground(new Color(250, 249, 247));
         // Boutons
@@ -146,10 +147,12 @@ public class Interface3 extends JFrame {
             content.append("🔹Énergie à produire par jour : ").append(Database.getEp()).append(" Wh\n");
             content.append("🔹Puissance crête (Pc) : ").append(Database.getPc()).append(" Wc\n");
             content.append("🔹Type de panneaux recommandé : ").append(Database.getTypePn()).append("\n");
-            content.append("🔹Type de Consomation : ").append(Database.getConso()).append("\n");
+            content.append("🔹Systeme de Consomation : ").append(Database.getSysteme()).append("\n");
             content.append("🔹Rendement : ").append(Database.getRd()).append("\n");
             content.append("🔹Tension du Module : ").append(Database.getTensionMod()).append(" V\n");
             content.append("🔹Nombre de panneaux : ").append(Database.getNp()).append("\n");
+            if ( Database.getNbBatteries() > 0) {
+                content.append("🔹Nombre de batterie : ").append(Database.getNbBatteries()).append("\n");}
             content.append("🔹Agencement : Nps = ").append(Database.getNps()).append(" | Npp = ").append(Database.getNpp()).append("\n");
             content.append("🔹Surface recommandée : ").append(Database.getSurface()).append(" m²\n\n");
             content.append("Date : ..............................................\n \n");
@@ -179,7 +182,7 @@ public class Interface3 extends JFrame {
             Document document = new Document(pdfDoc);
             try {
                 // Charger l'image
-                String imagePath = "src/main/java/img/logo.jpg"; // mets le bon chemin
+                String imagePath = "src/main/java/img/logo.jpg";
                 ImageData imageData = ImageDataFactory.create(imagePath);
                 Image logo = new Image(imageData).scaleToFit(180, 180).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 document.add(logo);
@@ -213,9 +216,7 @@ public class Interface3 extends JFrame {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur PDF : " + ex.getMessage());
             ex.printStackTrace();
-        }
-
-    }
+        }}
 
     public static void main(String[] args) {
         new Interface3();
@@ -224,7 +225,7 @@ public class Interface3 extends JFrame {
         try (FileWriter writer = new FileWriter("historique.txt", true)) {
             writer.write(nomProjet + "\n");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Erreur de sauvegarde dans l'historique : " + e.getMessage());
         }
     }
+
 }

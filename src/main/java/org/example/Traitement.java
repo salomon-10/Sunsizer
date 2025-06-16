@@ -3,75 +3,36 @@ package org.example;
 import javax.swing.*;
 
 public class Traitement {
-    public Object TypeConso;
-    Double Ec, Ir, Uc, Up, Pref, Long, Larg, Lat;
-
-    // Var interne
-    double Ep, Pc, Np , TensionMod;
-    String TypePn;
-    String Conso;
-    String Rd;
+    private double Ec,k, Ir, Uc, Up, longueur, largeur, latitude;
+    private double Ep;
+    private double Pc;
+    private double Np;
+    protected double Pref;
+    private String TypePn;
+    private String TypeSyst;
+    private String Rd;
     private int Nps;
     private int Npp;
     private double Surf;
 
-    public Traitement(Double Ec, Double Ir, Double Uc,  Double Long, Double Larg, Double Lat) {
+    public Object TypeConso;
+    private double tensionMod;
+
+    // Constructeur
+    public Traitement(double Ec, double Ir,double k, double Pref, double Uc, double longueur, double largeur, double latitude) {
         this.Ec = Ec;
         this.Ir = Ir;
+        this.k=k;
+        this.Pref = Pref;
         this.Uc = Uc;
-        this.Long = Long;
-        this.Larg = Larg;
-        this.Lat = Lat;
+        this.longueur = longueur;
+        this.largeur = largeur;
+        this.latitude = latitude;
     }
 
-    // Getters et Setters
-    public Double getEc() {
-        return Ec;
-    }
-    public void setEc(Double ec) {
-        Ec = ec;
-    }
-
-    public Double getIr() {
-        return Ir;
-    }
-    public void setIr(Double ir) {
-        Ir = ir;
-    }
-
-    public Double getUc() {
-        return Uc;
-    }
-    public void setUc(Double uc) {
-        Uc = uc;
-    }
-
-
-    public Double getLong() {
-        return Long;
-    }
-    public void setLong(Double Long) {
-        Long = Long;
-    }
-
-    public Double getLarg() {
-        return Larg;
-    }
-    public void setLarg(Double larg) {
-        Larg = larg;
-    }
-
-    public Double getLat() {
-        return Lat;
-    }
-    public void setLat(Double lat) {
-        Lat = lat;
-    }
-
-    // Méthodes🤘🤘
-
+    //mthds
     public void EnrgiePr() {
-        Ep = Ec / 0.65;
+        Ep = Ec / k;
     }
 
     public void Puissance() {
@@ -80,6 +41,7 @@ public class Traitement {
 
     public void ChoixPanneau() {
         String recommandation;
+
         if (Pc > 1000.0) {
             recommandation = "Cellules monocristallines";
         } else if (Pc < 150) {
@@ -87,12 +49,13 @@ public class Traitement {
         } else {
             recommandation = "Cellules Polycristallines";
         }
-        //chiox
+
         String[] options = {
                 "Cellules monocristallines",
                 "Cellules Polycristallines",
                 "Module PV Amorphe"
         };
+
         String choix = (String) JOptionPane.showInputDialog(
                 null,
                 "Recommandation : " + recommandation + "\n\nChoisissez le type de panneau :",
@@ -100,78 +63,138 @@ public class Traitement {
                 JOptionPane.QUESTION_MESSAGE,
                 null,
                 options,
-                recommandation //val pr defaut
+                recommandation
         );
 
         if (choix != null) {
-            if (choix.equals("Cellules monocristallines")) {
-                TypePn = "Cellules monocristallines";
-                Rd = "12-19%"; TensionMod = 48; Pref = 470.0; Up = 37.0;
-            } else if (choix.equals("Cellules Polycristallines")) {
-                TypePn = "Cellules Polycristallines";
-                Rd = "11-13%"; TensionMod = 24; Pref = 200.0; Up = 25.0;
-            } else if (choix.equals("Module PV Amorphe")) {
-                TypePn = "Module PV Amorphe";
-                Rd = "6-10%"; TensionMod = 12; Pref = 325.0; Up = 32.0;
+            switch (choix) {
+                case "Cellules monocristallines":
+                    TypePn = choix;
+                    Rd = "12-19%";
+                    Up = 48.0;
+                    break;
+                case "Cellules Polycristallines":
+                    TypePn = choix;
+                    Rd = "11-13%";
+                    Up = 24.0;
+                    break;
+                case "Module PV Amorphe":
+                    TypePn = choix;
+                    Rd = "6-10%";
+                    Up = 12.0;
+                    break;
             }
-            // maj de bdd
-            Database.setPref(Pref);
             Database.setTypePn(TypePn);
-            Database.setTensionMod(TensionMod);
+            Database.setTensionMod(Up);
             Database.setUp(Up);
         }
     }
 
     public void NbrPan() {
-        Np = Pc / Pref;
+        Np = Math.ceil(Pc / Pref);
+
     }
 
     public void Agencement() {
-        Nps = (int) (Uc / Up);
-        Npp = (int) (Pref*Np /Pc*Nps);
+        Nps = (int) Math.ceil(Uc / Up);
+        Npp = (int) Math.ceil(Np / (double) Nps);
 
-    }
+        int totalOptimal = Nps * Npp;
+        if (totalOptimal > Np) {
+            Np = totalOptimal;
+            JOptionPane.showMessageDialog(null,"🔧 Ajustement: Nombre total de panneaux mis à jour à " + Np
+                     +" pour un agencement équilibré.");
+            Database.setNp((int) Np);
+        }}
     public void Surface() {
-        Surf = Np * Long * Larg * 1.1;
+        Surf = Np * longueur * largeur * 1.1;
+
+    }
+    public void choixSysteme(){String[] systemes = {
+            "Autonome",
+            "Autonome avec Stockage",
+            "Hybride",
+            "Hybride avec Stockage"
+    };
+
+        String systemeChoisi = (String) JOptionPane.showInputDialog(
+                null,
+                "💡 Veuillez sélectionner un type de système photovoltaïque :",
+                "🔧 Choix du Système Solaire",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                systemes,
+                systemes[0]
+        );
+
+        if (systemeChoisi != null) {
+            Database.setSysteme(systemeChoisi);
+
+            if (systemeChoisi.equals(systemes[1]) || systemeChoisi.equals(systemes[3])) {
+
+                double Ep = Database.getEp();
+                double Ec = Database.getEc();
+                double Vbat = 12;
+                double capacite = 100;
+                double profondeurDecharge = 0.6;
+                double energieStock = Ep - Ec;
+                if (energieStock > 0) {
+                    double capaciteUtilisableParBatterie = Vbat * capacite * profondeurDecharge;
+                    int nbBatteries = (int) Math.ceil(energieStock / capaciteUtilisableParBatterie);
+                    Database.setNbBatteries(nbBatteries);
+                } else {
+                    Database.setNbBatteries(0);
+                }
+            }
+            JOptionPane.showMessageDialog(null, "✅ Système sélectionné : " + systemeChoisi);
+        } else {
+            JOptionPane.showMessageDialog(null, "❌ Aucun système sélectionné !");
+        }
 
     }
 
-// getters pr les valeu calculer
 
-    public double getSurf() {
-        return (int) Surf+1;
+
+
+    public double getEp() {
+        return Ep;
     }
 
-    public int getNpp() {
-        return Npp;
+    public double getPc() {
+        return Pc;
+    }
+
+    public int getNp() {
+        return (int) Math.ceil(Np);
     }
 
     public int getNps() {
         return Nps;
     }
 
-    public double getEp() {
-        return Ep;
+    public int getNpp() {
+        return Npp;
     }
-    public double getPc() {
-        return Pc;
+
+    public double getSurf() {
+        return Math.round(Surf * 100.0) / 100.0;
     }
-    public int getNp() {
-        return (int) Np+1;
-    }
+
     public String getTypePn() {
         return TypePn;
     }
 
-
     public String getRd() {
         return Rd;
     }
-    public double getTensionMod() {
-        return TensionMod;
+
+    public double getUp() {
+        return Up;
     }
 
 
-
+    public double getTensionMod() {
+        return getUp();
+    }
 
 }
